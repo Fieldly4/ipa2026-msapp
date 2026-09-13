@@ -33,16 +33,14 @@ def add_comment():
     password = request.form.get("password")
 
     if ip and username and password:
-        comments_col.insert_one({"ip": ip, "username": username,
-                                 "password": password})
+        comments_col.insert_one({"ip": ip, "username": username, "password": password})
     return redirect(url_for("main"))
 
 
 @app.route("/router/<router_ip>")
 def router_detail(router_ip):
     history_records = list(
-        results_collection.find({"router_ip": router_ip})
-        .sort("timestamp", -1).limit(3)
+        results_collection.find({"router_ip": router_ip}).sort("timestamp", -1).limit(3)
     )
 
     return render_template(
