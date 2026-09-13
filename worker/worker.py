@@ -56,7 +56,9 @@ def connect_router(router):
     print(f"[Worker1] Connected to {router_id}")
 
     # ใช้ TextFSM
-    result = connection.send_command("show ip interface brief", use_textfsm=True)
+    result = connection.send_command(
+        "show ip interface brief", use_textfsm=True
+    )
 
     connection.disconnect()
 
@@ -117,7 +119,9 @@ def main():
 
     credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
 
-    parameters = pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials)
+    parameters = pika.ConnectionParameters(
+        host=RABBITMQ_HOST, credentials=credentials
+    )
 
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()

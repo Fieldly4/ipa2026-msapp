@@ -19,7 +19,9 @@ def produce(host, body):
         queue="router_jobs", exchange="jobs", routing_key="check_interfaces"
     )
 
-    channel.basic_publish(exchange="jobs", routing_key="check_interfaces", body=body)
+    channel.basic_publish(
+        exchange="jobs", routing_key="check_interfaces", body=body
+    )
 
     connection.close()
 
