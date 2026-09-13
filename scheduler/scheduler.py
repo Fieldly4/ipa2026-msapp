@@ -1,4 +1,5 @@
-import time, os
+import time
+import os
 
 
 from bson import json_util
@@ -34,5 +35,5 @@ def scheduler():
         time.sleep(max(0.0, next_run - time.monotonic()))
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     scheduler()
