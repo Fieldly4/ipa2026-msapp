@@ -1,16 +1,21 @@
 version: '3.8'
 
 services:
-  # 1. MongoDB Service (เดิม)
+  # 1. MongoDB Service
   mongo:
     image: mongo:6
     container_name: mongo
     ports:
       - "27017:27017"
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - mongo_data:/data/db
 
-  # 2. RabbitMQ Service (ปรับเปลี่ยน User/Pass)
+  # 2. RabbitMQ Service
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -18,12 +23,12 @@ services:
       - .env
     ports:
       - "5672:5672"
-      - "15672:15672" # Management UI
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
 
-  # 3. Web Service (เดิม)
+  # 3. Web Service
   web:
     build: ./web
     container_name: web
@@ -32,7 +37,8 @@ services:
     env_file:
       - .env
     environment:
-      - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/
+      - MONGO_URI=${MONGO_URI}
+      - DB_NAME=${DB_NAME}
       - RABBITMQ_HOST=${RABBITMQ_HOST}
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASS=${RABBITMQ_PASS}
@@ -40,14 +46,15 @@ services:
       - mongo
       - rabbitmq
 
-  # 4. Scheduler Service (เพิ่มใหม่)
+  # 4. Scheduler Service
   scheduler:
     build: ./scheduler
     container_name: scheduler
     env_file:
       - .env
     environment:
-      - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/
+      - MONGO_URI=${MONGO_URI}
+      - DB_NAME=${DB_NAME}
       - RABBITMQ_HOST=${RABBITMQ_HOST}
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASS=${RABBITMQ_PASS}
@@ -55,6 +62,7 @@ services:
       - mongo
       - rabbitmq
 
+  # 5. Worker Service
   worker:
     build: ./worker
     container_name: worker
@@ -62,11 +70,11 @@ services:
     env_file:
       - .env
     environment:
+      - MONGO_URI=${MONGO_URI}
+      - DB_NAME=${DB_NAME}
       - RABBITMQ_HOST=${RABBITMQ_HOST}
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASS=${RABBITMQ_PASS}
-      - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/
-      - DB_NAME=${DB_NAME}
     depends_on:
       - rabbitmq
       - mongo
