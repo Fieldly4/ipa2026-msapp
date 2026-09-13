@@ -6,7 +6,6 @@ from datetime import datetime, timezone
 from pymongo import MongoClient
 from netmiko import ConnectHandler
 
-
 # =========================
 # Environment
 # =========================
@@ -33,6 +32,7 @@ results_collection = db["router_results"]
 # SSH Router
 # =========================
 
+
 def connect_router(router):
     router_id = router.get("_id")
     ip = router.get("ip") or router.get("IP")
@@ -56,10 +56,7 @@ def connect_router(router):
     print(f"[Worker1] Connected to {router_id}")
 
     # ใช้ TextFSM
-    result = connection.send_command(
-        "show ip interface brief",
-        use_textfsm=True
-    )
+    result = connection.send_command("show ip interface brief", use_textfsm=True)
 
     connection.disconnect()
 
@@ -71,6 +68,7 @@ def connect_router(router):
 # =========================
 # RabbitMQ Consumer
 # =========================
+
 
 def callback(ch, method, properties, body):
 
@@ -92,7 +90,7 @@ def callback(ch, method, properties, body):
         document = {
             "router_ip": ip,
             "timestamp": datetime.now(timezone.utc),
-            "interfaces": result
+            "interfaces": result,
         }
 
         results_collection.insert_one(document)
@@ -107,54 +105,36 @@ def callback(ch, method, properties, body):
         print(f"[Worker1] ERROR: {e}")
 
         # ปล่อย message ไม่สำเร็จ (ไม่นำกลับเข้า Queue)
-        ch.basic_nack(
-            delivery_tag=method.delivery_tag,
-            requeue=False
-        )
+        ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
 
 
 # =========================
 # Main
 # =========================
 
+
 def main():
 
-    credentials = pika.PlainCredentials(
-        RABBITMQ_USER,
-        RABBITMQ_PASS
-    )
+    credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
 
-    parameters = pika.ConnectionParameters(
-        host=RABBITMQ_HOST,
-        credentials=credentials
-    )
+    parameters = pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials)
 
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
 
     # ต้องตรงกับ Scheduler
-    channel.exchange_declare(
-        exchange="jobs",
-        exchange_type="direct"
-    )
+    channel.exchange_declare(exchange="jobs", exchange_type="direct")
 
-    channel.queue_declare(
-        queue="router_jobs"
-    )
+    channel.queue_declare(queue="router_jobs")
 
     channel.queue_bind(
-        queue="router_jobs",
-        exchange="jobs",
-        routing_key="check_interfaces"
+        queue="router_jobs", exchange="jobs", routing_key="check_interfaces"
     )
 
     # รับทีละ 1 message
     channel.basic_qos(prefetch_count=1)
 
-    channel.basic_consume(
-        queue="router_jobs",
-        on_message_callback=callback
-    )
+    channel.basic_consume(queue="router_jobs", on_message_callback=callback)
 
     print("[Worker1] Waiting for messages...")
     print("[Worker1] Queue: router_jobs")

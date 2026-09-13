@@ -5,7 +5,6 @@ from flask import Flask, request, render_template, redirect, url_for
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
-
 app = Flask(__name__)
 
 
@@ -34,26 +33,18 @@ def add_comment():
     password = request.form.get("password")
 
     if ip and username and password:
-        comments_col.insert_one({
-            "ip": ip,
-            "username": username,
-            "password": password
-        })
+        comments_col.insert_one({"ip": ip, "username": username, "password": password})
     return redirect(url_for("main"))
 
 
 @app.route("/router/<router_ip>")
 def router_detail(router_ip):
     history_records = list(
-        results_collection.find({"router_ip": router_ip})
-        .sort("timestamp", -1)
-        .limit(3)
+        results_collection.find({"router_ip": router_ip}).sort("timestamp", -1).limit(3)
     )
 
     return render_template(
-        "router_detail.html",
-        router_ip=router_ip,
-        records=history_records
+        "router_detail.html", router_ip=router_ip, records=history_records
     )
 
 
