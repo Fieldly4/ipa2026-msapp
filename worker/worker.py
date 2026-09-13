@@ -56,7 +56,8 @@ def connect_router(router):
     print(f"[Worker1] Connected to {router_id}")
 
     # ใช้ TextFSM
-    result = connection.send_command("show ip interface brief", use_textfsm=True)
+    result = connection.send_command("show ip interface brief",
+                                     use_textfsm=True)
 
     connection.disconnect()
 
@@ -105,7 +106,8 @@ def callback(ch, method, properties, body):
         print(f"[Worker1] ERROR: {e}")
 
         # ปล่อย message ไม่สำเร็จ (ไม่นำกลับเข้า Queue)
-        ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
+        ch.basic_nack(delivery_tag=method.delivery_tag,
+                      requeue=False)
 
 
 # =========================
@@ -117,7 +119,8 @@ def main():
 
     credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
 
-    parameters = pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials)
+    parameters = pika.ConnectionParameters(host=RABBITMQ_HOST,
+                                           credentials=credentials)
 
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
