@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Router Detail</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #b0c4de;
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            background-color: #c8d6e5;
+            min-width: 600px;
+        }
+        th, td {
+            border: 1px solid #555;
+            padding: 4px 8px;
+            font-size: 14px;
+        }
+        th {
+            background-color: #b8c4d4;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Router: {{ router_ip }}</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Interface</th>
+                <th>IP Address</th>
+                <th>Status</th>
+                <th>Protocol</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+                {% for intf in record.interfaces %}
+                <tr>
+                    <td>{{ record.timestamp.strftime('%Y-%m-%d %H:%M:%S.%f') if record.timestamp else '' }}</td>
+                    <td>{{ intf.interface or intf.intf }}</td>
+                    <td>{{ intf.ip_address or intf.ipaddr }}</td>
+                    <td>{{ intf.status }}</td>
+                    <td>{{ intf.proto or intf.protocol }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center;">No interface history found for this router.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

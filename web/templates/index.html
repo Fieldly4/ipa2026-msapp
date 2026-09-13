@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Router List</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #b0c4de;
+            padding: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background-color: #ffffff;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #777;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #d0d8e8;
+        }
+        a {
+            color: #0000ee;
+            text-decoration: underline;
+        }
+        .form-container {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        input {
+            margin-right: 8px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Router Management</h2>
+
+    <!-- ฟอร์มสำหรับเพิ่ม Router -->
+    <div class="form-container">
+        <form method="POST" action="/add">
+            <input name="IP" placeholder="IP Address" required />
+            <input name="username" placeholder="Username" required />
+            <input name="password" placeholder="Password" type="password" required />
+            <button type="submit">Add Router</button>
+        </form>
+    </div>
+
+    <!-- ตารางแสดงรายการ Router -->
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>IP Address</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for router in data %}
+            <tr>
+                <td>{{ router._id }}</td>
+                <td>
+                    <!-- ลิงก์เมื่อกดที่ IP จะไปหน้า router_detail -->
+                    <a href="{{ url_for('router_detail', router_ip=router.ip) }}">
+                        {{ router.ip }}
+                    </a>
+                </td>
+                <td>{{ router.username }}</td>
+                <td>{{ router.password }}</td>
+                <td>
+                    <!-- ฟอร์มลบข้อมูล Router -->
+                    <form method="POST" action="{{ url_for('delete_comment', comment_id=router._id) }}" style="display:inline">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center;">No routers found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
