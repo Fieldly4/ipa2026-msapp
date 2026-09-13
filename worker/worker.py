@@ -83,7 +83,6 @@ def callback(ch, method, properties, body):
         # แปลง JSON message
         router = json.loads(body)
 
-        router_id = router.get("_id")
         ip = router.get("ip") or router.get("IP")
 
         # SSH + show command

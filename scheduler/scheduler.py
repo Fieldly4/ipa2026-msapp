@@ -1,4 +1,4 @@
-import time, pika, os
+import time, os
 
 from bson import json_util
 from producer import produce
