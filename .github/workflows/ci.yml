@@ -27,7 +27,7 @@ jobs:
       run: flake8 .
 
     - name: Check code format with black
-      run: black --check .
+      run: black --line-length 79 --check .
 
     - name: Check Docker Versions
       run: |
