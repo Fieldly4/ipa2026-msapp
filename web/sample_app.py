@@ -1,26 +1,31 @@
 import os
 
+
 from flask import Flask, request, render_template, redirect, url_for
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
+
 app = Flask(__name__)
 
+
 # 1. เชื่อมต่อ MongoDB
-mongo_uri  = os.environ.get("MONGO_URI", "mongodb://mongo:27017/")
-db_name    = os.environ.get("DB_NAME", "router_db")
+mongo_uri = os.environ.get("MONGO_URI", "mongodb://mongo:27017/")
+db_name = os.environ.get("DB_NAME", "router_db")
 
 client = MongoClient(mongo_uri)
 db = client[db_name]
 
 # ประกาศ Collections ให้ครบถ้วน
 comments_col = db["routers"]
-results_collection = db["router_results"]   # <-- เพิ่มบรรทัดนี้
+results_collection = db["router_results"]
+
 
 @app.route("/")
 def main():
     data = list(comments_col.find())
     return render_template("index.html", data=data)
+
 
 @app.route("/add", methods=["POST"])
 def add_comment():
@@ -36,6 +41,7 @@ def add_comment():
         })
     return redirect(url_for("main"))
 
+
 @app.route("/router/<router_ip>")
 def router_detail(router_ip):
     history_records = list(
@@ -50,6 +56,7 @@ def router_detail(router_ip):
         records=history_records
     )
 
+
 @app.route("/delete/<comment_id>", methods=["POST"])
 def delete_comment(comment_id):
     try:
@@ -57,6 +64,7 @@ def delete_comment(comment_id):
     except Exception:
         pass
     return redirect(url_for("main"))
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
