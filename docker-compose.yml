@@ -14,12 +14,14 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
+    env_file:
+      - .env
     ports:
       - "5672:5672"
       - "15672:15672" # Management UI
     environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: rabbitmq
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
 
   # 3. Web Service (เดิม)
   web:
@@ -30,10 +32,10 @@ services:
     env_file:
       - .env
     environment:
-      - MONGO_URI=mongodb://mongo:27017/
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_USER=admin
-      - RABBITMQ_PASS=rabbitmq
+      - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASS=${RABBITMQ_PASS}
     depends_on:
       - mongo
       - rabbitmq
@@ -45,10 +47,10 @@ services:
     env_file:
       - .env
     environment:
-      - MONGO_URI=mongodb://mongo:27017/
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_USER=admin
-      - RABBITMQ_PASS=rabbitmq
+      - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASS=${RABBITMQ_PASS}
     depends_on:
       - mongo
       - rabbitmq
@@ -57,12 +59,14 @@ services:
     build: ./worker
     container_name: worker
     restart: always
+    env_file:
+      - .env
     environment:
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_USER=admin
-      - RABBITMQ_PASS=rabbitmq
-      - MONGO_URI=mongodb://mongo:27017/
-      - DB_NAME=router_db
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASS=${RABBITMQ_PASS}
+      - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/
+      - DB_NAME=${DB_NAME}
     depends_on:
       - rabbitmq
       - mongo
