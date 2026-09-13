@@ -42,10 +42,10 @@ jobs:
 
     - name: Build & Push Docker Images
       run: |
-        docker build -t fieldly04/worker:latest ./worker
-        docker build -t fieldly04/scheduler:latest ./scheduler
-        docker build -t fieldly04/web:latest ./web
+        docker build -t midfield32/worker:latest ./worker
+        docker build -t midfield32/scheduler:latest ./scheduler
+        docker build -t midfield32/web:latest ./web
 
-        docker push fieldly04/worker:latest
-        docker push fieldly04/scheduler:latest
-        docker push fieldly04/web:latest
+        docker push midfield32/worker:latest
+        docker push midfield32/scheduler:latest
+        docker push midfield32/web:latest
