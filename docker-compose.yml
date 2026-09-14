@@ -66,6 +66,8 @@ services:
   worker:
     build: ./worker
     # container_name: worker
+    deploy:
+      replicas: 3
     restart: always
     env_file:
       - .env
