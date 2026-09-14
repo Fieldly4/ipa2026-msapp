@@ -65,7 +65,7 @@ services:
   # 5. Worker Service
   worker:
     build: ./worker
-    container_name: worker
+    # container_name: worker
     restart: always
     env_file:
       - .env

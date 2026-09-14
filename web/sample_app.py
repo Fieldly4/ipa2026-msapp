@@ -44,7 +44,7 @@ def router_detail(router_ip):
     history_records = list(
         results_collection.find({"router_ip": router_ip})
         .sort("timestamp", -1)
-        .limit(3)
+        .limit(5)
     )
 
     return render_template(
